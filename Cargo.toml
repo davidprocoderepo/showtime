@@ -2,6 +2,9 @@
 name = "showtime"
 version = "0.1.0"
 edition = "2024"
+authors = ["david.luz.led <davidprocode@proton.me>"]
+description = "Marcador de cues de luz sincronizadas com música para GrandMA2"
+license = "MIT"
 
 [dependencies]
 anyhow = "1.0.104"
