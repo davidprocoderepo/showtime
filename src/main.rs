@@ -1,3 +1,18 @@
+//! Showtime — marcador de cues para GrandMA2 (somente Windows x64).
+//!
+//! O binário só pode ser compilado/executado em Windows x64
+//! (`x86_64-pc-windows-*`). A guarda abaixo usa `cfg(test)` para não impedir
+//! `cargo test` em outros SO durante o desenvolvimento.
+
+#[cfg(all(
+    not(test),
+    not(all(target_os = "windows", target_arch = "x86_64"))
+))]
+compile_error!(
+    "Showtime roda apenas no Windows x64 (target x86_64-pc-windows-msvc ou -gnu). \
+     Use um runner Windows x64 ou um toolchain de cross-compilação (ex.: llvm-mingw)."
+);
+
 mod audio;
 mod error;
 mod export;
