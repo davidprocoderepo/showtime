@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  build-test:
+    name: Build + test (Windows x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Check compilation guard (Windows x64 only)
+        run: cargo build --release
+        shell: bash
+
+      - name: Run tests
+        run: cargo test --release
+        shell: bash
+
+      - name: Upload showtime.exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: showtime-windows-x64
+          path: target/release/showtime.exe
+          if-no-files-found: error
+
+  release:
+    name: Release (tag v*)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download showtime.exe artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: showtime-windows-x64
+          path: dist/
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" dist/showtime.exe `
+            --title "Showtime ${{ github.ref_name }}" `
+            --notes "Build Windows x64 (nativo MSVC). Criado e desenvolvido por david.luz.led — Instagram: @david.luz.led"
+        shell: pwsh
