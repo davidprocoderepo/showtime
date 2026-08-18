@@ -2,6 +2,11 @@
 
 Marcador de cues de luz sincronizadas com música, com exportação e envio direto para consoles **GrandMA2** (MA Lighting).
 
+![CI](https://github.com/davidprocoderepo/showtime/actions/workflows/ci.yml/badge.svg)
+
+> **Plataforma**: Windows **x64** apenas. O binário é travado em tempo de compilação para
+> `x86_64-pc-windows-*` (MSVC ou GNU); `cargo test` continua rodando em qualquer SO.
+
 App desktop em Rust (`eframe`/`egui`). Decodifica áudio (WAV/MP3/FLAC/AIFF/OGG), desenha a waveform, reproduz com seek, marca cues na timeline com timecode SMPTE (24/25/30 e 29.97 drop-frame) e exporta para CSV, XML, macro MA2 e arquivo `.mid` — além de envio ao vivo por MTC (MIDI), eventos MIDI e TCP para o console.
 
 ## Créditos
