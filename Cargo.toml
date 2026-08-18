@@ -1,0 +1,21 @@
+[package]
+name = "showtime"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+eframe = "0.36.1"
+egui = "0.36.1"
+env_logger = "0.11.11"
+log = "0.4.33"
+midir = "0.11.0"
+midly = "0.5.3"
+rfd = "0.17.2"
+rodio = "0.22.2"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+symphonia = { version = "0.6.1", features = ["mp3", "flac", "wav", "aiff", "ogg", "pcm"] }
+thiserror = "2.0.20"
+tokio = { version = "1.53.1", features = ["rt-multi-thread", "net", "io-util", "time", "sync"] }
+yaml_serde = "0.10.6"
