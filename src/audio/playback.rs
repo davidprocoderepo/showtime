@@ -122,6 +122,25 @@ impl Playback {
         }
     }
 
+    /// Construtor de teste: nunca abre dispositivo de áudio (CI não tem).
+    ///
+    /// `DeviceSinkBuilder::open_default_sink()` no Windows sem endpoint de
+    /// áudio pode causar access violation dentro do cpal/WASAPI, então os
+    /// testes usam este caminho puro em vez do [`Playback::new`] real.
+    #[cfg(test)]
+    fn new_silent(samples: Arc<Vec<f32>>, sample_rate: u32, channels: u16) -> Self {
+        Playback {
+            samples,
+            sample_rate,
+            channels,
+            sink: None,
+            player: None,
+            playing: false,
+            position_sec: 0.0,
+            last_tick: None,
+        }
+    }
+
     fn source_at(&self, sec: f64) -> Option<PcmSource> {
         let frame = (sec * self.sample_rate as f64).round() as usize;
         let offset = frame.saturating_mul(self.channels as usize);
@@ -234,10 +253,7 @@ mod tests {
     /// Playback sem dispositivo (clock puro).
     fn silent() -> Playback {
         let samples = Arc::new(vec![0.0f32; 44100 * 2]);
-        let mut p = Playback::new(samples, 44100, 2);
-        p.sink = None;
-        p.player = None;
-        p
+        Playback::new_silent(samples, 44100, 2)
     }
 
     #[test]
@@ -296,8 +312,9 @@ mod tests {
     }
 
     #[test]
-    fn new_does_not_panic_without_device() {
-        // Deve funcionar mesmo sem áudio (modo silencioso).
-        let _ = Playback::new(Arc::new(Vec::new()), 44100, 2);
+    fn new_silent_has_no_player() {
+        let p = Playback::new_silent(Arc::new(Vec::new()), 44100, 2);
+        assert!(p.player.is_none());
+        assert!(p.sink.is_none());
     }
 }
