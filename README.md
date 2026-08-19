@@ -53,6 +53,10 @@ cargo test
 
 ## Arquitetura
 
+> Documentação completa para agentes de IA e novos desenvolvedores:
+> **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — módulos, fluxos de dados,
+> decisões de design, gotchas e guia de desenvolvimento.
+
 ```
 src/
 ├── audio/       # decoder (symphonia), waveform (picos min/max por bloco), playback (rodio)

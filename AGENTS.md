@@ -3,10 +3,12 @@
 Instruções para agentes trabalhando neste repositório. Cada linha responde: "um agente erraria isso sem ajuda?" Se não, não está aqui.
 
 ## Status
-- Projeto **greenfield**: construído do zero conforme a spec (app desktop Rust para marcar cues de luz sincronizadas com música e exportar/enviar para GrandMA2).
+- Projeto **em produção**: v0.1.0 publicado, CI verde (Windows x64), 49 testes passando, clippy 0 warnings.
+- **Leia também** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — guia completo de módulos, fluxos de dados, gotchas e desenvolvimento.
 - **Não tocar** em `.omo/` (artefatos de plano) nem `.codegraph/` (índice local de tooling).
-- Repositório **não é git** ainda: não commitar até o usuário pedir `git init`.
+- Repositório **git ativo** (origin: `https://github.com/davidprocoderepo/showtime.git`): commits atômicos com `GIT_MASTER=1` e push em `main`. CI roda a cada push; releases automáticas em tags `v*`.
 - A UI é em português; nomes de crates e comandos permanecem em inglês.
+- **Plataforma**: Windows x64 apenas (guarda `compile_error!` em `main.rs`); `cargo test` roda em qualquer SO.
 
 ## Stack (pinada — qualquer substituição exige justificativa no PR)
 - UI: `eframe`/`egui` — use a **última versão**; a API do egui muda rápido, tutoriais antigos (OutputStream/Sink etc.) estão defasados.
