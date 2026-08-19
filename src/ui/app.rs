@@ -21,6 +21,7 @@ use crate::project::io::{load_json, load_yaml, save_json, save_yaml};
 use crate::project::Project;
 use crate::timecode::{seconds_to_timecode, Timecode};
 
+use super::help;
 use super::marker_panel::{self, MarkerEditDraft, MarkerEditResult};
 use super::settings::AppSettings;
 use super::timeline::{self, TimelineInput, TimelineState};
@@ -63,6 +64,7 @@ pub struct ShowtimeApp {
     // Estado da UI.
     error: Option<String>,
     show_settings: bool,
+    show_help: bool,
     selected_marker: Option<u32>,
     editing: Option<MarkerEditDraft>,
     timeline: TimelineState,
@@ -96,6 +98,7 @@ impl ShowtimeApp {
             decoding: false,
             error: None,
             show_settings: false,
+            show_help: false,
             selected_marker: None,
             editing: None,
             timeline: TimelineState::default(),
@@ -522,6 +525,12 @@ impl ShowtimeApp {
                     ui.close();
                 }
             });
+            ui.menu_button("Ajuda", |ui| {
+                if ui.button("Como conectar ao GrandMA2...").clicked() {
+                    self.show_help = true;
+                    ui.close();
+                }
+            });
             if self.decoding {
                 ui.separator();
                 ui.spinner();
@@ -719,6 +728,13 @@ impl eframe::App for ShowtimeApp {
                     }
                 });
             self.show_settings = open;
+        }
+
+        // Janela de ajuda (conexão GrandMA2).
+        if self.show_help {
+            let mut open = true;
+            help::show(&ctx, &mut open);
+            self.show_help = open;
         }
 
         // Diálogo de edição de marcador.

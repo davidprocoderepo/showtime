@@ -4,6 +4,7 @@
 //! `live`) — o core jamais importa `egui`.
 
 pub mod app;
+pub mod help;
 pub mod marker_panel;
 pub mod settings;
 pub mod timeline;
