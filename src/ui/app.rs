@@ -135,6 +135,18 @@ impl ShowtimeApp {
         });
     }
 
+    /// Abre o diálogo de seleção de arquivo de áudio e inicia o decode em
+    /// thread de fundo.
+    fn open_audio(&mut self) {
+        let Some(path) = rfd::FileDialog::new()
+            .add_filter("Áudio (WAV/MP3/FLAC/AIFF/OGG)", &["wav", "mp3", "flac", "aiff", "aif", "ogg"])
+            .pick_file()
+        else {
+            return;
+        };
+        self.load_audio(path);
+    }
+
     /// Consome o resultado do decode em background (chamado a cada frame).
     fn poll_decode(&mut self) {
         let Some(rx) = self.decode_rx.take() else {
@@ -444,6 +456,11 @@ impl ShowtimeApp {
     fn menu_bar(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
             ui.menu_button("Arquivo", |ui| {
+                if ui.button("Abrir áudio...").clicked() {
+                    self.open_audio();
+                    ui.close();
+                }
+                ui.separator();
                 if ui.button("Novo projeto").clicked() {
                     self.new_project();
                     ui.close();
@@ -586,6 +603,42 @@ impl ShowtimeApp {
     }
 
     fn timeline_view(&mut self, ui: &mut egui::Ui) {
+        // Sem áudio carregado: mostra convite para adicionar uma faixa
+        // (ou o progresso enquanto decodifica).
+        if self.playback.is_none() {
+            ui.vertical_centered(|ui| {
+                ui.add_space(60.0);
+                if self.decoding {
+                    ui.spinner();
+                    ui.add_space(8.0);
+                    ui.label(
+                        egui::RichText::new("Decodificando áudio...").weak(),
+                    );
+                } else {
+                    ui.heading("Nenhuma faixa de áudio carregada");
+                    ui.add_space(8.0);
+                    ui.label(
+                        egui::RichText::new(
+                            "Abra um arquivo WAV, MP3, FLAC, AIFF ou OGG para começar.",
+                        )
+                        .weak(),
+                    );
+                    ui.add_space(16.0);
+                    if ui
+                        .button(
+                            egui::RichText::new("＋ Adicionar faixa de áudio...")
+                                .size(18.0)
+                                .strong(),
+                        )
+                        .clicked()
+                    {
+                        self.open_audio();
+                    }
+                }
+            });
+            return;
+        }
+
         let position_sec = self.current_position();
         let input = TimelineInput {
             waveform: self.waveform.as_ref(),
